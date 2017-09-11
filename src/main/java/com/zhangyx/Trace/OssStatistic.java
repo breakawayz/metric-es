@@ -70,7 +70,7 @@ public class OssStatistic implements Runnable, ContextHandler {
             }
             try {
                 //此处上传数据
-
+                System.out.println(cnt);
             } catch (Exception e) {
                 log.error("cannot calculate service, module={}", module, e);
             }

@@ -1,10 +1,13 @@
 package com.zhangyx.Trace;
 
+import lombok.Data;
+
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * 封装了公共的计数器逻辑
  */
+@Data
 public abstract class StatCounter {
     //依次是总调用次数，失败数，流控失败数，超时数，总耗时
     private AtomicIntegerArray counters = new AtomicIntegerArray(5);
