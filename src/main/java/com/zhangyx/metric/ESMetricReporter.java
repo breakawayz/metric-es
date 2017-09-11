@@ -22,10 +22,14 @@ package com.zhangyx.metric;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.ScheduledReporter;
 import com.google.common.base.Throwables;
+import com.zhangyx.util.IpUtil;
 import org.elasticsearch.metrics.ElasticsearchReporter;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +44,12 @@ public class ESMetricReporter {
     }
 
     private Optional<ElasticsearchReporter> getReporter(ESReporterConfiguration esReporterConfiguration, MetricRegistry registry) {
+        // 获取服务器ip
+
+        Map<String, Object> additionalFileds = new HashMap<>();
+        additionalFileds.put("ip", IpUtil.getLocalIp());
+        additionalFileds.put("servername", "hello");
+
         if (esReporterConfiguration.isEnabled()) {
             try {
                 return Optional.of(ElasticsearchReporter.forRegistry(registry)
@@ -47,6 +57,7 @@ public class ESMetricReporter {
                         .index(esReporterConfiguration.getIndex())
                         .convertRatesTo(TimeUnit.SECONDS)
                         .convertDurationsTo(TimeUnit.MILLISECONDS)
+                        .additionalFields(additionalFileds)
                         .build());
             } catch (IOException e) {
                 throw Throwables.propagate(e);

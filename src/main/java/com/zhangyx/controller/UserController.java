@@ -1,5 +1,6 @@
 package com.zhangyx.controller;
 
+import com.zhangyx.Trace.TraceContext;
 import com.zhangyx.metric.DropWizardMetricFactory;
 import com.zhangyx.metric.TimeMetric;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,11 @@ public class UserController {
 
     @RequestMapping("/hello/{myName}")
     String index(@PathVariable String myName) {
-
-        TimeMetric timeMetric = dropWizardMetricFactory.timer("requestHello");
+        TraceContext context = TraceContext.get();
+        context.setServerName("metric-es");
+        context.setUrl("/hello");
+        int sleepMillins = new Random().nextInt(500) + 1;
         try {
-            int sleepMillins = new Random().nextInt(500) + 1;
             try {
                 Thread.sleep(sleepMillins);
             } catch (InterruptedException e) {
@@ -29,7 +31,8 @@ public class UserController {
             }
             return "Hello " + myName + "!!!";
         } finally {
-            timeMetric.stopAndPublish();
+            context.setFail(false);
+            context.setCost(sleepMillins);
         }
     }
 }
