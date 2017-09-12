@@ -3,14 +3,20 @@ package com.zhangyx.Trace;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 计数器相关代码
  */
 @Data
 @NoArgsConstructor
-public abstract class BaseStatBean implements Serializable {
+public class BaseStatBean implements Serializable {
     protected int totalCount = 0;
     protected int failCount = 0;
     protected int slowCount = 0;
@@ -50,5 +56,40 @@ public abstract class BaseStatBean implements Serializable {
             ret = ret.substring(0, ret.length() - 3);
         }
         return ret;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = transBean2Map(this);
+        return map;
+    }
+
+    public static Map<String, Object> transBean2Map(Object obj) {
+
+        if (obj == null) {
+            return null;
+        }
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+            for (PropertyDescriptor property : propertyDescriptors) {
+                String key = property.getName();
+
+                // 过滤class属性
+                if (!key.equals("class")) {
+                    // 得到property对应的getter方法
+                    Method getter = property.getReadMethod();
+                    Object value = getter.invoke(obj);
+
+                    map.put(key, value);
+                }
+
+            }
+        } catch (Exception e) {
+            System.out.println("transBean2Map Error " + e);
+        }
+
+        return map;
+
     }
 }
