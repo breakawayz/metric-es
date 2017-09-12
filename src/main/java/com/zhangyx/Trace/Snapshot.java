@@ -21,7 +21,7 @@ public class Snapshot {
     }
 
     public void add(TraceContext c) {
-        String serverName = c.getServerName();
+        String serverName = c.getApp();
         if (serverName == null) {
             return;
         }
