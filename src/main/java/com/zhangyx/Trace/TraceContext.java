@@ -9,7 +9,7 @@ public class TraceContext {
     private String clientIp;
     private String url;
     private boolean fail;
-    private String serverName;
+    private String app;
 
 
     public static TraceContext get() {
@@ -55,12 +55,12 @@ public class TraceContext {
     }
 
 
-    public String getServerName() {
-        return serverName;
+    public String getApp() {
+        return app;
     }
 
-    public TraceContext setServerName(String serverName) {
-        this.serverName = serverName;
+    public TraceContext setApp(String app) {
+        this.app = app;
         return this;
     }
 
@@ -86,7 +86,7 @@ public class TraceContext {
     public TraceContext reset() {
         this.cost = 0;
         this.fail = false;
-        this.serverName = null;
+        this.app = null;
         this.url = null;
         return this;
     }
@@ -97,7 +97,7 @@ public class TraceContext {
         n.setCost(cost)
                 .setFail(fail)
                 .setClientIp(clientIp)
-                .setServerName(serverName)
+                .setApp(app)
                 .setUrl(url);
         return n;
     }
