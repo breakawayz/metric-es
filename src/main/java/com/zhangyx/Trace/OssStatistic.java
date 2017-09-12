@@ -1,15 +1,18 @@
 package com.zhangyx.Trace;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.zhangyx.esclient.EsClient;
 import com.zhangyx.util.IpUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 
 /**
  * 每分钟统计,并上报到消息总线
- * Created by lirui on 2015-10-14 10:43.
  */
 @Slf4j
 public class OssStatistic implements Runnable, ContextHandler {
@@ -62,7 +65,9 @@ public class OssStatistic implements Runnable, ContextHandler {
         long stamp = s.getStamp();
         String caller = IpUtil.getLocalIp();
 
-        for (ServiceStatCounter cnt : service.values()) {
+        for (Map.Entry<String, ServiceStatCounter> entry : service.entrySet()) {
+            ServiceStatCounter cnt = entry.getValue();
+            String serviceName = entry.getKey();
             String module = cnt.getModule();
             if (cnt.getTotalCost() == 0) {
                 log.warn("skip when cost=0, module={}, method={}", module);
@@ -70,6 +75,10 @@ public class OssStatistic implements Runnable, ContextHandler {
             }
             try {
                 //此处上传数据
+                Map<String, Object> map = cnt.fillCounter().toMap();
+                map.put("ip", caller);
+                map.put("url", serviceName);
+                EsClient.sendDate(map);
                 System.out.println(cnt);
             } catch (Exception e) {
                 log.error("cannot calculate service, module={}", module, e);
