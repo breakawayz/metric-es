@@ -77,7 +77,8 @@ public abstract class StatCounter {
         this.side = side;
     }
 
-    public void fillCounter(BaseStatBean e) {
+    public BaseStatBean fillCounter() {
+        BaseStatBean e = new BaseStatBean();
         e.setTotalCount(counters.get(0));
         e.setFailCount(counters.get(1));
         e.setSlowCount(counters.get(3));
@@ -88,5 +89,6 @@ public abstract class StatCounter {
         e.setMs1000(rangeCounter.get(3));
         e.setMs10000(rangeCounter.get(4));
         e.setMsMore(rangeCounter.get(5));
+        return e;
     }
 }
