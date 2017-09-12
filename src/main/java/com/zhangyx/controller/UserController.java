@@ -26,7 +26,7 @@ public class UserController {
     @RequestMapping("/hello/{myName}")
     String index(@PathVariable String myName) {
         TraceContext context = TraceContext.get();
-        context.setServerName("metric-es");
+        context.setApp("metric-es");
         context.setUrl("/hello");
         int sleepMillins = new Random().nextInt(500) + 1;
         try {
